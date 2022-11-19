@@ -1,42 +1,37 @@
 let productsBackup = [];
 
-getProducts();
+fetch('https://fakestoreapi.com/products')
+  .then(response => response.json())
+  .then(function(data) {
 
-function getProducts() {
+    document.querySelector("#search").value = "";
 
-  document.querySelector("#search").value = "";
+    let htmlStr = `
+    <div>Select products category</div>
+    <ul>
+      <li>All</li>
+      ${data.reduce(function (html, product) {
+      if (!html.includes(product.category)) {
+        html += '<li>' + product.category + '</li>';
+      }
+      return html;
+      }, "")}
+    </ul>`;
+    
+    document.querySelector(".custom-dropdown").innerHTML = htmlStr;
 
-  fetch('https://fakestoreapi.com/products')
-    .then(response => response.json())
-    .then(function(data) {
-
-      let htmlStr = `
-      <div>Select products category</div>
-      <ul>
-        <li>All</li>
-        ${data.reduce(function (html, product) {
-        if (!html.includes(product.category)) {
-          html += '<li>' + product.category + '</li>';
+    productsBackup = data.map(function (element) {
+        return {
+          image: element.image,
+          title: element.title,
+          category: element.category,
+          price: element.price
         }
-        return html;
-        }, "")}
-      </ul>`;
-      
-      document.querySelector(".custom-dropdown").innerHTML = htmlStr;
+    });
+    
+    renderProducts(productsBackup);
 
-      productsBackup = data.map(function (element) {
-          return {
-            image: element.image,
-            title: element.title,
-            category: element.category,
-            price: element.price
-          }
-      });
-      
-      renderProducts(productsBackup);
-
-  });
-}
+});
 
 function renderProducts(productsBackup) {
   
